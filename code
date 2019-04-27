@@ -1,0 +1,29 @@
+on replace_text1(this_text, search_string, replacement_string) -- handler name changed from the book only to facilitate production of this file
+	set AppleScript's text item delimiters to the search_string
+	set the item_list to every text item of this_text
+	set AppleScript's text item delimiters to the replacement_string
+	set this_text to the item_list as string
+	set AppleScript's text item delimiters to {""}
+	return this_text
+end replace_text1
+
+on run
+	
+	set theDocument to choose file with prompt "Please select a document to process:"
+	set OriginalMovieLocation to quoted form of POSIX path of theDocument
+	
+	set NewMovieLocation to OriginalMovieLocation
+	set NewMovieLocation to replace_text1(NewMovieLocation, ".mkv", ".mp4")
+	
+	display dialog OriginalMovieLocation
+	
+	display dialog NewMovieLocation
+	
+	-- post the tweet
+	do shell script "/usr/local/bin/ffmpeg -i " & OriginalMovieLocation & "  -acodec copy -vcodec copy " & NewMovieLocation
+	
+	tell application "Finder"
+		move theDocument to trash
+		
+	end tell
+end run

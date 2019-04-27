@@ -1,0 +1,14 @@
+This is an applescript that allows you to select a single movie and have it quickly remuxed (not converted) to MP4
+this is great if you run a plex server, as you dont need to transcode MP$'s so there is less stress on the server.
+
+Key points:
+You need to have FFMPEG installed - see below
+Its much faster than coverting the file in handbrake
+The sound and video quality of the original file is maintained
+As its remuxed (not converted) the resulting file size will be simlar to the original file.
+It places the original file in the trash
+
+
+Installing ffmpeg
+1 First install brew (https://brew.sh) by typing this into the terminal without quotes "/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+2 Then install ffmpeg by typing this in the terminal without quotes "brew install ffmpeg"

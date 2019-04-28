@@ -10,15 +10,21 @@ end replace_text1
 on run
 	
 	set theDocument to choose file with prompt "Please select a document to process:"
-	set OriginalMovieLocation to quoted form of POSIX path of theDocumen
+	set OriginalMovieLocation to quoted form of POSIX path of theDocument
+	
 	set NewMovieLocation to OriginalMovieLocation
 	set NewMovieLocation to replace_text1(NewMovieLocation, ".mkv", ".mp4")
 	set NewMovieLocation to replace_text1(NewMovieLocation, ".mov", ".mp4")
 	set NewMovieLocation to replace_text1(NewMovieLocation, ".avi", ".mp4")
+	set NewMovieLocation to replace_text1(NewMovieLocation, ".wmv", ".mp4")
+	set NewMovieLocation to replace_text1(NewMovieLocation, ".flv", ".mp4")
 	--display dialog OriginalMovieLocation
 	--display dialog NewMovieLocation
+	
 	do shell script "/usr/local/bin/ffmpeg -i " & OriginalMovieLocation & "  -acodec copy -vcodec copy " & NewMovieLocation
+	
 	tell application "Finder"
-		move theDocument to trash	
+		move theDocument to trash
+		
 	end tell
 end run

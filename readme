@@ -1,5 +1,5 @@
 This is an applescript that allows you to select a single movie and have it quickly remuxed (not converted) to MP4
-this is great if you run a plex server, as you dont need to transcode MP$'s so there is less stress on the server.
+this is great if you run a plex server, as you don't need to transcode MP4's so there is less stress on the server.
 
 Key points:
 You need to have FFMPEG installed - see below

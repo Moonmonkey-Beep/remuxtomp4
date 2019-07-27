@@ -1,12 +1,17 @@
-This is an applescript that allows you to select a single movie and have it quickly remuxed (not converted) to MP4
+This is an applescript droplet that allows you to drop a single movie and have it quickly remuxed (not converted) to MP4
 this is great if you run a plex server, as you don't need to transcode MP4's so there is less stress on the server.
+
+How to use:
+
+Just drop a single MKV, MOV, or AVI file onto the app, the MP4 version will replace the old version.
+A 600 Meg movie takes under a minute, a fill HD movie might take a few minutes.
 
 Key points:
 You need to have FFMPEG installed - see below
 Its much faster than coverting the file in handbrake
 The sound and video quality of the original file is maintained
 As its remuxed (not converted) the resulting file size will be similar to the original file.
-It places the original file in the trash
+It places the original file in the trash, if an error is dtected the original remains and a logfile appears explaning the issue.
 
 
 Installing ffmpeg

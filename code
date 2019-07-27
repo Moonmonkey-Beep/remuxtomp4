@@ -7,60 +7,71 @@ on replace_text1(this_text, search_string, replacement_string) -- handler name c
 	return this_text
 end replace_text1
 
-on run
-	set DeleteOriginal to true
-	set theDocument to choose file with prompt "Please select a document to process:" of type {"public.movie"}
-	set OriginalMovieLocation to quoted form of POSIX path of theDocument
+
+on open theDroppedFiles
 	
-	set NewMovieLocation to OriginalMovieLocation
-	set NewMovieLocation to replace_text1(NewMovieLocation, ".mkv", ".mp4")
-	set NewMovieLocation to replace_text1(NewMovieLocation, ".mov", ".mp4")
-	set NewMovieLocation to replace_text1(NewMovieLocation, ".avi", ".mp4")
-	set NewMovieLocation to replace_text1(NewMovieLocation, ".wmv", ".mp4")
-	set NewMovieLocation to replace_text1(NewMovieLocation, ".flv", ".mp4")
-	set NewerrorLocation to replace_text1(NewMovieLocation, ".mp4", ".log")
-	
-	--display dialog OriginalMovieLocation
-	--display dialog NewMovieLocation
-	
-	
-	try
-		do shell script "/usr/local/bin/ffmpeg -v error -i " & OriginalMovieLocation & "  -acodec copy -vcodec copy " & NewMovieLocation & " -f null - 2>" & NewerrorLocation
-	on error errStr number errorNumber
-		display dialog "The original appears to be damaged, it will be left untouched"
-		
-		set DeleteOriginal to false
-		
-	end try
-	
-	
-	-- final check of new file prior to deleting original file just checks final 60 seconds to save time, not currently functioning so commented out.
-	--do shell script "/usr/local/bin/ffmpeg -i -sseof -60 " & NewMovieLocation & " -f null - 2>" & NewerrorLocation
-	
-	-- delete log file if empty
-	
-	
-	set dataFile to NewerrorLocation as text
-	
-	try
-		set dataRecords to read file dataFile using delimiter {return}
+	if number of theDroppedFiles is 1 then
 		
 		
-		display dialog "Error detected original file is untouched"
-		display dialog dataRecords
-		set DeleteOriginal to false
-	on error
-		--delete file
-		--display dialog "empty deleting logfile"
 		set DeleteOriginal to true
-	end try
-	
-	
-	
-	if DeleteOriginal is true then
-		tell application "Finder"
-			move theDocument to trash
+		set theDocument to theDroppedFiles
+		set OriginalMovieLocation to quoted form of POSIX path of theDocument
+		
+		set NewMovieLocation to OriginalMovieLocation
+		set NewMovieLocation to replace_text1(NewMovieLocation, ".mkv", ".mp4")
+		set NewMovieLocation to replace_text1(NewMovieLocation, ".mov", ".mp4")
+		set NewMovieLocation to replace_text1(NewMovieLocation, ".avi", ".mp4")
+		set NewMovieLocation to replace_text1(NewMovieLocation, ".wmv", ".mp4")
+		set NewMovieLocation to replace_text1(NewMovieLocation, ".flv", ".mp4")
+		set NewerrorLocation to replace_text1(NewMovieLocation, ".mp4", ".log")
+		
+		--display dialog OriginalMovieLocation
+		--display dialog NewMovieLocation
+		
+		
+		try
+			do shell script "/usr/local/bin/ffmpeg -v error -i " & OriginalMovieLocation & "  -acodec copy -vcodec copy " & NewMovieLocation & " -f null - 2>" & NewerrorLocation
+		on error errStr number errorNumber
+			display dialog "The original appears to be damaged, it will be left untouched"
 			
-		end tell
+			set DeleteOriginal to false
+			
+		end try
+		
+		
+		-- final check of new file prior to deleting original file just checks final 60 seconds to save time, not currently functioning so commented out.
+		--do shell script "/usr/local/bin/ffmpeg -i -sseof -60 " & NewMovieLocation & " -f null - 2>" & NewerrorLocation
+		
+		-- delete log file if empty
+		
+		
+		set dataFile to NewerrorLocation as text
+		
+		try
+			set dataRecords to read file dataFile using delimiter {return}
+			
+			
+			display dialog "Error detected original file is untouched"
+			display dialog dataRecords
+			set DeleteOriginal to false
+		on error
+			delete file
+			--display dialog "empty deleting logfile"
+			set DeleteOriginal to false
+		end try
+		
+		
+		
+		if DeleteOriginal is true then
+			tell application "Finder"
+				move theDocument to trash
+				
+			end tell
+		end if
+		
+		
+	else
+		-- more than one file dropped
+		display dialog "Sorry only one file can be proccessed at a time"
 	end if
-end run
+end open

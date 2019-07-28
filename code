@@ -1,3 +1,9 @@
+
+global itemCount
+global completedCount
+
+
+-- replace text function to swap filetypes
 on replace_text1(this_text, search_string, replacement_string) -- handler name changed from the book only to facilitate production of this file
 	set AppleScript's text item delimiters to the search_string
 	set the item_list to every text item of this_text
@@ -7,71 +13,66 @@ on replace_text1(this_text, search_string, replacement_string) -- handler name c
 	return this_text
 end replace_text1
 
-
-on open theDroppedFiles
+on open theDroppedItems
 	
-	if number of theDroppedFiles is 1 then
+	set itemCount to count of theDroppedItems
+	set completedCount to 1
+	repeat with a from 1 to count of theDroppedItems
+		set theCurrentItem to item a of theDroppedItems
 		
+		processItem(theCurrentItem)
 		
-		set DeleteOriginal to true
-		set theDocument to theDroppedFiles
-		set OriginalMovieLocation to quoted form of POSIX path of theDocument
-		
-		set NewMovieLocation to OriginalMovieLocation
-		set NewMovieLocation to replace_text1(NewMovieLocation, ".mkv", ".mp4")
-		set NewMovieLocation to replace_text1(NewMovieLocation, ".mov", ".mp4")
-		set NewMovieLocation to replace_text1(NewMovieLocation, ".avi", ".mp4")
-		set NewMovieLocation to replace_text1(NewMovieLocation, ".wmv", ".mp4")
-		set NewMovieLocation to replace_text1(NewMovieLocation, ".flv", ".mp4")
-		set NewerrorLocation to replace_text1(NewMovieLocation, ".mp4", ".log")
-		
-		--display dialog OriginalMovieLocation
-		--display dialog NewMovieLocation
-		
-		
-		try
-			do shell script "/usr/local/bin/ffmpeg -v error -i " & OriginalMovieLocation & "  -acodec copy -vcodec copy " & NewMovieLocation & " -f null - 2>" & NewerrorLocation
-		on error errStr number errorNumber
-			display dialog "The original appears to be damaged, it will be left untouched"
-			
-			set DeleteOriginal to false
-			
-		end try
-		
-		
-		-- final check of new file prior to deleting original file just checks final 60 seconds to save time, not currently functioning so commented out.
-		--do shell script "/usr/local/bin/ffmpeg -i -sseof -60 " & NewMovieLocation & " -f null - 2>" & NewerrorLocation
-		
-		-- delete log file if empty
-		
-		
-		set dataFile to NewerrorLocation as text
-		
-		try
-			set dataRecords to read file dataFile using delimiter {return}
-			
-			
-			display dialog "Error detected original file is untouched"
-			display dialog dataRecords
-			set DeleteOriginal to false
-		on error
-			delete file
-			--display dialog "empty deleting logfile"
-			set DeleteOriginal to false
-		end try
-		
-		
-		
-		if DeleteOriginal is true then
-			tell application "Finder"
-				move theDocument to trash
-				
-			end tell
-		end if
-		
-		
-	else
-		-- more than one file dropped
-		display dialog "Sorry only one file can be proccessed at a time"
-	end if
+	end repeat
 end open
+
+on processItem(theItem)
+	
+	set DeleteOriginal to true
+	
+	set OriginalMovieLocation to quoted form of POSIX path of theItem
+	
+	set NewMovieLocation to OriginalMovieLocation
+	set NewMovieLocation to replace_text1(NewMovieLocation, ".mkv", ".mp4")
+	set NewMovieLocation to replace_text1(NewMovieLocation, ".mov", ".mp4")
+	set NewMovieLocation to replace_text1(NewMovieLocation, ".avi", ".mp4")
+	set NewMovieLocation to replace_text1(NewMovieLocation, ".wmv", ".mp4")
+	set NewMovieLocation to replace_text1(NewMovieLocation, ".flv", ".mp4")
+	set NewerrorLocation to replace_text1(NewMovieLocation, ".mp4", ".log")
+	
+	-- display dialog OriginalMovieLocation
+	-- display dialog NewMovieLocation
+	--display dialog itemCount
+	
+	
+	--HANDLE PROGRESS BAR
+	
+	
+	
+	set progress total steps to itemCount
+	set progress completed steps to completedCount
+	set progress description to "Remuxing Movie"
+	delay 1.5
+	
+	try
+		do shell script "/usr/local/bin/ffmpeg -v quiet -stats -i " & OriginalMovieLocation & "  -acodec copy -vcodec copy " & NewMovieLocation & " -f null - 2>" & NewerrorLocation
+	on error errStr number errorNumber
+		display dialog "The original appears to be damaged, it will be left untouched"
+		
+		set DeleteOriginal to false
+		
+	end try
+	
+	
+	if DeleteOriginal is true then
+		set progress description to "Deleting Originals"
+		delay 1.5
+		-- delete the file
+		do shell script "rm " & OriginalMovieLocation
+		do shell script "rm " & NewerrorLocation
+	end if
+	
+	-- add another number to progress bar
+	
+	set completedCount to completedCount + 1
+	
+end processItem

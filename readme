@@ -1,10 +1,10 @@
-This is an applescript droplet that allows you to drop a single movie and have it quickly remuxed (not converted) to MP4
-this is great if you run a plex server, as you don't need to transcode MP4's so there is less stress on the server.
+This is an applescript droplet that allows you to drop movie and have them quickly remuxed (not converted) to MP4
+this is great if you run a Plex server, as you don't need to transcode MP4's so there is less stress on the server.
 
 How to use:
 
-Just drop a single MKV, MOV, or AVI file onto the app, the MP4 version will replace the old version.
-A 600 Meg movie takes under a minute, a fill HD movie might take a few minutes.
+Just drop a file or group of MKV, MOV, or AVI files onto the app, the MP4 version will replace the old version.
+A 600 Meg movie takes under a minute, a full HD movie might take a few minutes.
 
 Key points:
 You need to have FFMPEG installed - see below
